@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1f2937; }
+    h1 { margin-bottom: 20px; }
+    .conv { display: flex; justify-content: space-between; align-items: center;
+            padding: 14px; border-bottom: 1px solid #e5e7eb; text-decoration: none; color: inherit; }
+    .conv:hover { background: #f9fafb; }
+    .conv.unread .name { font-weight: 700; }
+    .name { display: block; }
+    .preview { color: #6b7280; font-size: 14px; }
+    .badge { background: #2563eb; color: white; border-radius: 999px;
+             padding: 2px 9px; font-size: 12px; margin-left: 12px; }
+    .empty { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>Messages</h1>
+
+  {% if rows %}
+    {% for row in rows %}
+      <a class="conv {% if row.unread %}unread{% endif %}"
+         href="{% url 'messaging:conversation_detail' row.conversation.pk %}">
+        <span>
+          <span class="name">{{ row.other.get_full_name|default:row.other.username }}</span>
+          {% if row.last_message %}
+            <span class="preview">{{ row.last_message.body|truncatechars:60 }}</span>
+          {% endif %}
+        </span>
+        {% if row.unread %}<span class="badge">{{ row.unread }}</span>{% endif %}
+      </a>
+    {% endfor %}
+  {% else %}
+    <p class="empty">No conversations yet.</p>
+  {% endif %}
+</body>
+</html>
