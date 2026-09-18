@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversation with {{ other.get_full_name|default:other.username }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1f2937; }
+    a.back { color: #2563eb; text-decoration: none; }
+    h1 { margin: 10px 0 20px; }
+    .thread { display: flex; flex-direction: column; margin-bottom: 24px; }
+    .bubble { padding: 10px 14px; border-radius: 14px; margin: 6px 0; max-width: 70%; line-height: 1.4; }
+    .mine { background: #2563eb; color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+    .theirs { background: #f1f5f9; border-bottom-left-radius: 4px; }
+    .meta { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+    textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { margin-top: 8px; padding: 8px 16px; background: #2563eb; color: white;
+             border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <p><a class="back" href="{% url 'messaging:inbox' %}">&larr; Back to inbox</a></p>
+  <h1>{{ other.get_full_name|default:other.username }}</h1>
+
+  <div class="thread">
+    {% for message in thread %}
+      <div class="bubble {% if message.sender_id == request.user.id %}mine{% else %}theirs{% endif %}">
+        {{ message.body }}
+        <div class="meta">{{ message.created_at|date:"M d, H:i" }}</div>
+      </div>
+    {% empty %}
+      <p>No messages yet — say hello.</p>
+    {% endfor %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send</button>
+  </form>
+</body>
+</html>
